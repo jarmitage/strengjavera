@@ -1,11 +1,11 @@
 # Strengjavera
 
 ## Next up
-- Update Mac Mini
-- Test MRP with Mac Mini
 - Bela test with MRP -> Headphones
 - MRP<>Bela<>Tolvera running
 - Harmonics<>Behaviours mapping
-- IML add/remove
-- IML tryptych
+- IML1: Bela Flucoma -> Tolvera Boids rules
+- IML2: Boids pos/vel -> Harmonics
+- IML add/remove feature
+- Tolvera tryptych
 

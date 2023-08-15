@@ -1,4 +1,4 @@
-#N canvas 864 32 1728 667 12;
+#N canvas 640 0 1280 1052 12;
 #X declare -lib fluid_libmanipulation;
 #X obj 2 3 declare -lib fluid_libmanipulation;
 #X obj 85 136 fluid.spectralshape~;
@@ -200,6 +200,8 @@
 #X listbox 1066 236 67 0 0 0 - - - 0;
 #X listbox 1135 305 66 0 0 0 - - - 0;
 #X text 1228 184 better to do this on py side?;
+#X obj 476 379 r~ in;
+#X obj 476 403 dac~ 1 2;
 #X connect 1 0 4 0;
 #X connect 2 0 21 0;
 #X connect 4 0 5 0;
@@ -233,3 +235,4 @@
 #X connect 45 0 44 0;
 #X connect 46 0 45 0;
 #X connect 52 0 48 0;
+#X connect 54 0 55 0;

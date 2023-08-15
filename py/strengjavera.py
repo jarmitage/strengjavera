@@ -18,8 +18,8 @@ import torch
 #         pass
 
 def main(x=1920, y=1080, n=64, species=5, fps=120, 
-        # host="127.0.0.1", client="127.0.0.1", 
-        host="192.168.7.1", client="192.168.7.2", 
+        host="127.0.0.1", client="127.0.0.1", 
+        # host="192.168.7.1", client="192.168.7.2", 
         receive_port=7561, send_port=7562,
         headless=False, 
         fundamental=440
@@ -95,6 +95,7 @@ def main(x=1920, y=1080, n=64, species=5, fps=120,
     }
     fluid_novelty_feature = 0.0
     fluid_amp_feature = 0.0
+    fluid_sine_feature = {n: [0.0, 0.0] for n in range(8)}
 
     # OSC Map
 
@@ -118,6 +119,7 @@ def main(x=1920, y=1080, n=64, species=5, fps=120,
 
     @osc_map.add(centroid=(20,20,20e3), spread=(20,20,20e3), skewness=(0,0,8), kurtosis=(0,0,128), rolloff=(20,20,20e3), flatness=(0,-120,0), crest=(0,0,60), io=io, count=update_rate)
     def fluid_spectralshape(centroid: float, spread: float, skewness: float, kurtosis: float, rolloff: float, flatness: float, crest: float):
+        nonlocal fluid_spectral_shape
         fluid_spectral_shape['centroid'] = centroid
         fluid_spectral_shape['spread'] = spread
         fluid_spectral_shape['skewness'] = skewness
@@ -125,17 +127,28 @@ def main(x=1920, y=1080, n=64, species=5, fps=120,
         fluid_spectral_shape['rolloff'] = rolloff
         fluid_spectral_shape['flatness'] = flatness
         fluid_spectral_shape['crest'] = crest
-        print(fluid_spectral_shape)
+        print(f"fluid_spectral_shape: {fluid_spectral_shape}")
     
     @osc_map.add(novelty=(0,0,1), io=io, count=update_rate)
     def fluid_noveltyfeature(novelty: float):
+        nonlocal fluid_novelty_feature
         fluid_novelty_feature = novelty
-        print(fluid_novelty_feature)
+        print(f"fluid_novelty_feature: {fluid_novelty_feature}")
     
     @osc_map.add(amp=(0,0,1), io=io, count=update_rate)
     def fluid_ampfeature(amp: float):
+        nonlocal fluid_amp_feature
         fluid_amp_feature = amp
-        print(fluid_amp_feature)
+        print(f"fluid_amp_feature: {fluid_amp_feature}")
+
+    # @osc_map.add(f0=(20,20,20e3), io=io, count=update_rate)
+    # def fluid_sinefeature(f0: float, f1: float, f2: float, f3: float, f4: float, f5: float, f6: float, f7: float, m0: float, m1: float, m2: float, m3: float, m4: float, m5: float, m6: float, m7: float):
+    #     nonlocal fluid_sine_feature
+    #     fluid_sine_feature = {
+    #         0: [f0, m0], 1: [f1, m1], 2: [f2, m2], 3: [f3, m3],
+    #         4: [f4, m4], 5: [f5, m5], 6: [f6, m6], 7: [f7, m7]
+    #     }
+    #     print(f"fluid_sine_feature: {fluid_sine_feature}")
 
     '''
     Python → Patcher

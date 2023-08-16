@@ -2,7 +2,7 @@
 TODO: MRP Updater funcs - does `@cleanup` work? add to tolvera?
 TODO: IML1 Particles->Harmonics
     random mappings don't work very well...
-    harmonics.py -> numpy to torch...?
+    live code harmonics.py -> numpy to torch...?
     species -> notes etc
 TODO: Lag harmonics and flucoma data
 TODO: Tolvera data synthesis...? Headless?

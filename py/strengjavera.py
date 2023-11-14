@@ -24,16 +24,19 @@ from wrapper_bela import BelaWrapper
 from wrapper_mrp import MRPWrapper    
 
 def main(x=1920, y=1080, n=64, species=5, fps=120, 
-        local_host="127.0.0.1", local_client="127.0.0.1",
+        # local_host="127.0.0.1", local_client="127.0.0.1",
+        local_host="192.168.0.100", local_client="192.168.0.101", 
         bela_host ="192.168.7.1", bela_client ="192.168.7.2", 
-        pd_receive_port=7561, pd_send_port=7562, mrp_send_port=7770,
+        pd_receive_port=5001, pd_send_port=5000,
+        # pd_receive_port=7561, pd_send_port=7562, 
+        mrp_send_port=7770,
         headless=False
     ):
 
     # OSC
-    osc_local = OSCWrapper(local_host, local_client, pd_receive_port, pd_send_port, "osc_local", verbose=False)
+    osc_local = OSCWrapper(local_host, local_client, pd_receive_port, pd_send_port, "osc_local", verbose=True)
     osc_local.host.create_client("mrp", local_client, mrp_send_port)
-    osc_bela = OSCWrapper(bela_host, bela_client, pd_receive_port, pd_send_port, "osc_bela")
+    # osc_bela = OSCWrapper(bela_host, bela_client, pd_receive_port, pd_send_port, "osc_bela")
 
     # Tolvera
     t = TolveraWrapper(x, y, n, species, fps, headless)
@@ -53,15 +56,19 @@ def main(x=1920, y=1080, n=64, species=5, fps=120,
     # print(bela()) # TODO: test this, should be 1d
 
     # IML
-    iml_particles_harmonics = IMLWrapper((n,2), t.particles.osc_get_pos_all_2d, 16, mrp.test_harmonics_raw, update_rate=20) # TODO: need to handle sending to MRP
+    iml_particles_harmonics = IMLWrapper((n,2), t.particles.osc_get_pos_all_2d, 16, mrp.test_harmonics_raw)
     # iml_flucoma_boids = IMLWrapper((len(bela())), bela.tolist, 16) # TODO: need a boids.set_all_rules() func
 
     # OSC Map
 
     '''
-    Max → Python
+    Pd → Python
     '''
     io, update_rate = 'receive', 1
+
+    @osc_local.host.args('/*')
+    def _(address, *args):
+        print(f"{address} {args}")
 
     # Attractors
     @osc_local.map.add(x=(x/2,0,x), y=(y/2,0,y), io=io, count=update_rate)
@@ -109,12 +116,19 @@ def main(x=1920, y=1080, n=64, species=5, fps=120,
     #     }
     #     print(f"fluid_sine_feature: {fluid_sine_feature}")
 
-    # '''
-    # Python → Patcher
-    # '''
-    # io, update_rate = 'send', 7
-    # send_mode = 'broadcast' # | 'event'
-    # send_counter = 0
+    '''
+    Python → Patcher
+    '''
+    io, update_rate = 'send', 7
+    send_mode = 'broadcast' # | 'event'
+    send_counter = 0
+
+    @osc_local.map.add(a1=(0,0,n), a2=(0,0,n), io=io, count=update_rate, send_mode='broadcast')
+    def attractors_nearby() -> tuple[int, int]:
+        nonlocal t
+        a1 = t.attractors.field[0].p.nearby
+        a2 = t.attractors.field[1].p.nearby
+        return [a1, a2]
 
 
     # Render loop
@@ -122,7 +136,7 @@ def main(x=1920, y=1080, n=64, species=5, fps=120,
         # osc_iml_send()
         # osc_bela.map()
         osc_local.map()
-        iml_particles_harmonics()
+        # iml_particles_harmonics()
         t()
 
     tol.utils.render(render, t.pixels)

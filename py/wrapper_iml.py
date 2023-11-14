@@ -42,12 +42,18 @@ class IMLWrapper:
         return dist.sample((n,))
     def randomise(self):
         for i in range(self.random_pairs):
+            # A
             # self.source = self.sigmoid_randn(self.source_size, factor=0.9)
             # self.target = self.sigmoid_randn(self.target_size, factor=0.9)
+            # B
             # self.source = torch.rand(self.source_size)
             # self.target = torch.rand(self.target_size)
+            # C
+            # self.source = torch.rand(self.source_size)
+            # self.target = self.beta_randn(self.target_size, 0.1, 0.1)
+            # D
             self.source = torch.rand(self.source_size)
-            self.target = self.beta_randn(self.target_size, 0.1, 0.1)
+            self.target = torch.rand(self.target_size)
             # series = torch.from_numpy(basic_harmonic_series(self.target_size))
             # self.target = series * self.target
             # print(self.source, self.target)
